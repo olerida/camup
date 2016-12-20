@@ -10,10 +10,18 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.segre.camup.UploadActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:id="@+id/vLayout"></LinearLayout>
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/scrView">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/vLayout"></LinearLayout>
+
+    </ScrollView>
 </RelativeLayout>

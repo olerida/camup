@@ -4,6 +4,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -22,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,7 +40,8 @@ import java.io.InputStream;
 
 public class UploadActivity extends AppCompatActivity {
 
-    static final String PATH = "file:///storage/emulated/0/DCIM";
+    //static final String PATH = "file:///storage/emulated/0/DCIM/Wi-Fi SD";
+    static final String PATH = "Wi-Fi SD";
     static final String HOST = "10.8.6.125";
     static final String USER = "foto";
     static final String PWD = "f.oto";
@@ -57,15 +62,14 @@ public class UploadActivity extends AppCompatActivity {
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
         root.addView(progressBar);*/
 
-        start();
+        //start();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         try {
-            ftp.logout();
-            ftp.disconnect();
+            if (ftp.isConnected()) ftp.disconnect();
             Log.d("FTP", "FTP connection closed.");
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,8 +91,11 @@ public class UploadActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    // Start
-    public void start() {
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
         //test network
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(CONNECTIVITY_SERVICE);
@@ -106,21 +113,20 @@ public class UploadActivity extends AppCompatActivity {
             String state = Environment.getExternalStorageState();
             if (Environment.MEDIA_MOUNTED.equals(state) ||
                     Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-                File imagesDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath(), "/Camera");
+                File imagesDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath(), PATH);
                 //File imagesDir = new File("/sdcard/DCIM/Camera");
 
                 Log.d("Files", "Path: " + imagesDir.getPath());
                 Log.d("Files", "Exist: " + imagesDir.exists());
                 Log.d("Files", "IsDir: " + imagesDir.exists());
                 Log.d("Files", "CanRead: " + imagesDir.canRead());
-                File[] files = imagesDir.listFiles();
+                final File[] files = imagesDir.listFiles();
                 Log.d("Files", "Images on dir: "+ files.length);
 
                 if (!imagesDir.exists() || !imagesDir.canRead()) {
                     Log.d("FILES", "Cant access filesystem");
                     return;
                 }
-
 
                 // Check and go to working directory (album)
                 try {
@@ -129,45 +135,61 @@ public class UploadActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                LinearLayout vLayout = (LinearLayout) findViewById(R.id.vLayout);
+                final Context c = this;
+                final LinearLayout vl = (LinearLayout) findViewById(R.id.vLayout);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for ( int i = 0; i < files.length; i++) {
+                                final File f =  files[i];
+                                Log.d("Files", "FileName:" + files[i].getName());
 
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        RelativeLayout rl = new RelativeLayout(c);
+                                        ImageView img = new ImageView(c);
+                                        BitmapFactory.Options bopt = new BitmapFactory.Options();
+                                        bopt.inSampleSize = 2;
+                                        Bitmap b = BitmapFactory.decodeFile(f.getAbsolutePath(), bopt);
+                                        Drawable d = new BitmapDrawable(getResources(), b);
+                                        img.setImageDrawable(d);
+                                        img.setLayoutParams(new LinearLayoutCompat.LayoutParams(300, 300));
+                                        img.setForegroundGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+                                        rl.addView(img); // 0 imatge de la foto
+                                        ProgressBar pg = new ProgressBar(c);
+                                        pg.setForegroundGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+                                        rl.addView(pg); // 1 progressbar
+                                        b = BitmapFactory.decodeResource(getResources(), R.drawable.ok, bopt);
+                                        img = new ImageView(c);
+                                        img.setLayoutParams(new LinearLayoutCompat.LayoutParams(150, 150));
+                                        d = new BitmapDrawable(getResources(), b);
+                                        img.setImageDrawable(d);
+                                        img.setVisibility(View.INVISIBLE);
+                                        rl.addView(img); // 2 imatge del ok
 
-                for (int i = 0; i < files.length; i++)
-                {
-                    Log.d("Files", "FileName:" + files[i].getName());
+                                        LinearLayout hl = new LinearLayout(c); hl.setOrientation(LinearLayout.HORIZONTAL);
+                                        hl.addView(rl);
+                                        TextView tv = new TextView(c);
+                                        tv.setText(f.getName());
+                                        hl.addView(tv);
 
-                    LinearLayout hLayout = new LinearLayout( this );
-                    hLayout.setOrientation( LinearLayout.HORIZONTAL );
-                    vLayout.addView( hLayout );
+                                        vl.addView(hl);
+                                        ScrollView sc = (ScrollView) findViewById(R.id.scrView);
+                                        sc.fullScroll(View.FOCUS_DOWN);
+                                    }
+                                });
 
-                    RelativeLayout rLayout = new RelativeLayout(this);
+                                // Call Upload files task
+                                try {
+                                    Boolean uploaded = new ftpUploadFilesTask(c, i).execute(f).get();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
 
-                    ImageView img = new ImageView( this );
-                    Drawable d = Drawable.createFromPath( files[i].getAbsolutePath() );
-                    img.setImageDrawable(d);
-                    ViewGroup.LayoutParams lp =  new ViewGroup.LayoutParams(300,300);
-                    img.setLayoutParams(lp);
-                    rLayout.addView(img); // 0
-                    rLayout.addView( new ProgressBar( this ) ); // 1
-                    Drawable dok =  ContextCompat.getDrawable(this, R.drawable.ok);
-                    ImageView imgok = new ImageView(this);
-                    imgok.setImageDrawable(dok);
-                    imgok.setVisibility(View.INVISIBLE);
-                    rLayout.addView(imgok); // 2
-
-                    hLayout.addView(rLayout);
-
-                    TextView tv = new TextView(this);
-                    tv.setText(files[i].getName());
-                    hLayout.addView(tv);
-
-                    // Call Upload files task
-                    try {
-                        Boolean uploaded = new ftpUploadFilesTask(this, hLayout).execute(files[i]).get();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                            }
+                        }
+                    }).start();
             }
 
         } else {
@@ -196,10 +218,10 @@ public class UploadActivity extends AppCompatActivity {
     private class ftpUploadFilesTask extends AsyncTask<File, Void, Boolean> {
         File file;
         Context mc;
-        LinearLayout ll;
+        int p;
 
-        public ftpUploadFilesTask(Context c, LinearLayout l) {
-            mc = c; ll = l;
+        public ftpUploadFilesTask(Context c, int position) {
+            mc = c; p = position;
         }
 
         @Override
@@ -215,6 +237,7 @@ public class UploadActivity extends AppCompatActivity {
                 ftp.setFileType(FTP.BINARY_FILE_TYPE);
                 input = new FileInputStream(file);
                 ftp.storeFile(file.getName(), input);
+                //Thread.sleep(5000);
                 input.close();
             } catch (FileNotFoundException e) {
                 Log.w("FTP", "File not found: " + files[0].getName());
@@ -222,21 +245,24 @@ public class UploadActivity extends AppCompatActivity {
             } catch (IOException e) {
                 Log.e("FTP", "Error on upload file: " + file.getName());
                 return false;
+/*            } catch (InterruptedException e) {
+                e.printStackTrace();*/
             }
             return true;
         }
 
         protected void onPostExecute(Boolean uploaded) {
             if (uploaded) {
-                Toast.makeText(mc, file.getName() + " Uploaded.", Toast.LENGTH_LONG).show();
-                RelativeLayout rl = (RelativeLayout) ll.getChildAt(0);
+                Toast.makeText(mc, file.getName() + " Uploaded.", Toast.LENGTH_SHORT).show();
+                LinearLayout vl = (LinearLayout) findViewById(R.id.vLayout);
+                LinearLayout hl = (LinearLayout) vl.getChildAt(p);
+                RelativeLayout rl = (RelativeLayout) hl.getChildAt(0);
                 ProgressBar pb = (ProgressBar) rl.getChildAt(1);
                 pb.setVisibility(View.INVISIBLE);
                 ImageView imgok = (ImageView) rl.getChildAt(2);
                 imgok.setVisibility(View.VISIBLE);
-
             } else {
-                Toast.makeText(mc, file.getName() + " cant upload.", Toast.LENGTH_LONG).show();
+                Toast.makeText(mc, file.getName() + " cant upload.", Toast.LENGTH_SHORT).show();
             }
 
         }
