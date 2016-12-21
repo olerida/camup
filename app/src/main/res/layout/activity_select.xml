@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_select"
     android:layout_width="match_parent"
@@ -9,16 +10,18 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.segre.camup.SelectActivity"
-    android:background="@color/colorPrimaryDark">
+    android:background="@drawable/appicon">
 
     <Button
         android:text="Pujar Album"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/upbutton"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="upClick" />
+        android:onClick="upClick"
+        android:layout_alignBaseline="@+id/cfgbutton"
+        android:layout_alignBottom="@+id/cfgbutton"
+        android:layout_toStartOf="@+id/cfgbutton"
+        android:layout_marginEnd="37dp" />
 
     <Button
         android:text="Configuració"
@@ -26,6 +29,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/cfgbutton"
         android:onClick="cfgClick"
-        android:layout_below="@+id/upbutton"
-        android:layout_centerHorizontal="true" />
+        android:layout_marginEnd="36dp"
+        android:layout_marginBottom="19dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>
