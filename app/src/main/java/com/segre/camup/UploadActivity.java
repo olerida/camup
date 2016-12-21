@@ -42,7 +42,7 @@ public class UploadActivity extends AppCompatActivity {
 
     //static final String PATH = "file:///storage/emulated/0/DCIM/Wi-Fi SD";
     static final String PATH = "Wi-Fi SD";
-    static final String HOST = "10.8.6.125";
+    static final String HOST = "ftp.segre.com";
     static final String USER = "foto";
     static final String PWD = "f.oto";
     static final String ALBUM = "proves_oscar";
@@ -53,16 +53,6 @@ public class UploadActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
-
-/*        ProgressBar progressBar = new ProgressBar(this);
-        progressBar.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        // Must add the progress bar to the root of the layout
-        ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
-        root.addView(progressBar);*/
-
-        //start();
     }
 
     @Override
@@ -160,13 +150,20 @@ public class UploadActivity extends AppCompatActivity {
                                         ProgressBar pg = new ProgressBar(c);
                                         pg.setForegroundGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
                                         rl.addView(pg); // 1 progressbar
-                                        b = BitmapFactory.decodeResource(getResources(), R.drawable.ok, bopt);
+                                        b = BitmapFactory.decodeResource(getResources(), R.drawable.completed, bopt);
                                         img = new ImageView(c);
-                                        img.setLayoutParams(new LinearLayoutCompat.LayoutParams(150, 150));
+                                        img.setLayoutParams(new LinearLayoutCompat.LayoutParams(100, 100));
                                         d = new BitmapDrawable(getResources(), b);
                                         img.setImageDrawable(d);
                                         img.setVisibility(View.INVISIBLE);
                                         rl.addView(img); // 2 imatge del ok
+                                        b = BitmapFactory.decodeResource(getResources(), R.drawable.error, bopt);
+                                        img = new ImageView(c);
+                                        img.setLayoutParams(new LinearLayoutCompat.LayoutParams(100, 100));
+                                        d = new BitmapDrawable(getResources(), b);
+                                        img.setImageDrawable(d);
+                                        img.setVisibility(View.INVISIBLE);
+                                        rl.addView(img); // 3 imatge del error
 
                                         LinearLayout hl = new LinearLayout(c); hl.setOrientation(LinearLayout.HORIZONTAL);
                                         hl.addView(rl);
@@ -253,7 +250,8 @@ public class UploadActivity extends AppCompatActivity {
 
         protected void onPostExecute(Boolean uploaded) {
             if (uploaded) {
-                Toast.makeText(mc, file.getName() + " Uploaded.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mc, file.getName() + " Uploaded.", Toast.LENGTH_SHORT).show();
+                Log.d("FTP", file.getName() + " uploaded.");
                 LinearLayout vl = (LinearLayout) findViewById(R.id.vLayout);
                 LinearLayout hl = (LinearLayout) vl.getChildAt(p);
                 RelativeLayout rl = (RelativeLayout) hl.getChildAt(0);
@@ -262,7 +260,15 @@ public class UploadActivity extends AppCompatActivity {
                 ImageView imgok = (ImageView) rl.getChildAt(2);
                 imgok.setVisibility(View.VISIBLE);
             } else {
-                Toast.makeText(mc, file.getName() + " cant upload.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mc, file.getName() + " cant upload.", Toast.LENGTH_SHORT).show();
+                Log.d("FTP", file.getName() + " cant upload.");
+                LinearLayout vl = (LinearLayout) findViewById(R.id.vLayout);
+                LinearLayout hl = (LinearLayout) vl.getChildAt(p);
+                RelativeLayout rl = (RelativeLayout) hl.getChildAt(0);
+                ProgressBar pb = (ProgressBar) rl.getChildAt(1);
+                pb.setVisibility(View.INVISIBLE);
+                ImageView imgok = (ImageView) rl.getChildAt(3);
+                imgok.setVisibility(View.VISIBLE);
             }
 
         }
