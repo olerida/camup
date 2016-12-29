@@ -44,4 +44,14 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
+    <Button
+        android:text="Galeria"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="33dp"
+        android:id="@+id/button"
+        android:layout_above="@+id/upbutton"
+        android:layout_centerHorizontal="true"
+        android:onClick="galeriaClick" />
+
 </RelativeLayout>

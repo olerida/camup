@@ -8,12 +8,9 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-
-import static android.provider.LiveFolders.INTENT;
 
 public class SelectActivity extends AppCompatActivity {
     public final static String FILESLST = "com.segre.camup.FILESLST";
@@ -65,5 +62,10 @@ public class SelectActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    public void galeriaClick(View view) {
+        Intent intent = new Intent(this, GalleryActivity.class);
+        startActivity(intent);
     }
 }
