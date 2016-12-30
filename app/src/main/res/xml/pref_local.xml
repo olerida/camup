@@ -10,6 +10,11 @@
         android:title="@string/pref_title_path" />
 
     <SwitchPreference
+        android:defaultValue="true"
+        android:key="local_gallery"
+        android:title="@string/pref_title_gallery" />
+
+    <SwitchPreference
         android:defaultValue="false"
         android:key="local_resize"
         android:title="@string/pref_title_resize" />
@@ -23,7 +28,6 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_title_maxhw" />
-
 
 <!--
 

@@ -24,11 +24,12 @@
     <include layout="@layout/content_gallery" />
 
     <android.support.design.widget.FloatingActionButton
-    android:id="@+id/send_fbtn"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom|right"
-    android:layout_margin="@dimen/fab_margin"
+        android:id="@+id/send_fbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="@dimen/fab_margin"
+        android:onClick="upfotosClick"
     app:srcCompat="@android:drawable/ic_menu_send"
         app:layout_anchorGravity="bottom|right" />
 
@@ -38,7 +39,18 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|left"
         android:layout_margin="@dimen/fab_margin"
+        android:onClick="eliminarFotos"
         app:srcCompat="@android:drawable/ic_menu_delete"
+        app:layout_anchorGravity="bottom|center_horizontal" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/refresh_fbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="@dimen/fab_margin"
+        android:onClick="refreshClick"
+        app:srcCompat="@android:drawable/stat_notify_sync"
         app:layout_anchorGravity="bottom|center_horizontal" />
 
 </android.support.design.widget.CoordinatorLayout>

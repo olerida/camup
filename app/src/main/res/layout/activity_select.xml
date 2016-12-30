@@ -12,28 +12,6 @@
     tools:context="com.segre.camup.SelectActivity"
     android:background="#197BC6">
 
-    <Button
-        android:text="Pujar Album"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/upbutton"
-        android:onClick="upClick"
-        android:layout_alignBaseline="@+id/cfgbutton"
-        android:layout_alignBottom="@+id/cfgbutton"
-        android:layout_toStartOf="@+id/cfgbutton"
-        android:layout_marginEnd="37dp" />
-
-    <Button
-        android:text="Configuració"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/cfgbutton"
-        android:onClick="cfgClick"
-        android:layout_marginEnd="36dp"
-        android:layout_marginBottom="19dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true" />
-
     <ImageView
         app:srcCompat="@drawable/appicon"
         android:id="@+id/imageView"
@@ -45,13 +23,35 @@
         android:layout_centerHorizontal="true" />
 
     <Button
+        android:text="Configuració"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cfgbutton"
+        android:onClick="cfgClick"
+        android:layout_marginEnd="33dp"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:text="Pujar Album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/upbutton"
+        android:onClick="upClick"
+        android:layout_marginStart="33dp"
+        android:layout_alignBaseline="@+id/cfgbutton"
+        android:layout_alignBottom="@+id/cfgbutton"
+        android:layout_alignParentStart="true" />
+
+    <Button
         android:text="Galeria"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="33dp"
-        android:id="@+id/button"
-        android:layout_above="@+id/upbutton"
+        android:id="@+id/gallery_btn"
+        android:onClick="galeriaClick"
+        android:layout_above="@+id/cfgbutton"
         android:layout_centerHorizontal="true"
-        android:onClick="galeriaClick" />
+        android:layout_marginBottom="20dp" />
 
 </RelativeLayout>

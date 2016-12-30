@@ -12,21 +12,27 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class SelectActivity extends AppCompatActivity {
-    public final static String FILESLST = "com.segre.camup.FILESLST";
+    //@Override
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select);
-
-        Log.i("PREF",
+        Log.d("PREF",
                 PreferenceManager
-                .getDefaultSharedPreferences(this)
-                .getString("ftp_server", "")
+                        .getDefaultSharedPreferences(this)
+                        .getString("ftp_server", "")
         );
 
+        Boolean gallery = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("local_gallery", true);
+        if (gallery) {
+            galeriaClick(findViewById(R.id.gallery_btn));
+        }
     }
 
     public void upClick(View view) {
@@ -45,15 +51,14 @@ public class SelectActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (input.getText().toString().equals("prem.goras")) {
+                String pwd = input.getText().toString();
+                if (pwd.equals("prem.goras")) {
                     Intent intent = new Intent(c, SettingsActivity.class);
                     startActivity(intent);
                 }
                 dialog.cancel();
             }
         });
-
-
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

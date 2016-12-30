@@ -14,6 +14,7 @@
     <string name="pref_title_path">Carpeta fotos Wifi SD</string>
     <string name="pref_title_resize">Reduir imatge</string>
     <string name="pref_title_maxhw">Maxim al&#231;ada/amplada</string>
+    <string name="pref_title_gallery">Activar galeria</string>
 
 
     <!-- Example General settings -->

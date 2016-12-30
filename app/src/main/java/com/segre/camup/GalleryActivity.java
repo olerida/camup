@@ -1,9 +1,11 @@
 package com.segre.camup;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +32,7 @@ public class GalleryActivity extends AppCompatActivity {
     ArrayList<Integer> okfoto = new ArrayList<Integer>();
     Integer[] fotook;
     public String path;
+    File[] files;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,14 +51,15 @@ public class GalleryActivity extends AppCompatActivity {
         });
 
         final GridView gridview = (GridView) findViewById(R.id.gallery_view);
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/Camera";
+        path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + PreferenceManager.getDefaultSharedPreferences(this).getString("local_path", "/Camera");
 
         gridview.setAdapter(new GalleryActivity.ImageAdapter(this, path));
         gridview.setChoiceMode(gridview.CHOICE_MODE_MULTIPLE);
 
-        gridview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 SparseBooleanArray sb = gridview.getCheckedItemPositions();
                 gridview.setItemChecked(position, sb.get(position));
 
@@ -74,49 +78,14 @@ public class GalleryActivity extends AppCompatActivity {
                     ck.setVisibility(View.INVISIBLE);
                 }
                 for(int x=0;x<okfoto.size();x++) {
-                    System.out.println("ArrayList"+ okfoto.get(x));
+                    Log.d("FOTOS", "ArrayList"+ okfoto.get(x));
                 }
                 fotook = okfoto.toArray(new Integer[okfoto.size()]);
                 for(int x=0;x<fotook.length;x++) {
-                    System.out.println("Array "+ fotook[x].toString());
+                    Log.d("FOTOS", "Array "+ fotook[x].toString());
                 }
 
-                Toast.makeText(GalleryActivity.this, "" + position, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        });
-
-
-        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-           /*     SparseBooleanArray sb = gridview.getCheckedItemPositions();
-                gridview.setItemChecked(position, sb.get(position));
-
-                Log.d("CHECKED", "" + sb.get(position));
-                if(sb.get(position) == true)
-                {
-                    okfoto.add(position);
-                    RelativeLayout rl = (RelativeLayout) view;
-                    ImageView ck = (ImageView) rl.getChildAt(1);
-                    ck.setVisibility(View.VISIBLE);
-                }
-                else {
-                    okfoto.remove(new Integer(position));
-                    RelativeLayout rl = (RelativeLayout) view;
-                    ImageView ck = (ImageView) rl.getChildAt(1);
-                    ck.setVisibility(View.INVISIBLE);
-                }
-                for(int x=0;x<okfoto.size();x++) {
-                    System.out.println("ArrayList"+ okfoto.get(x));
-                }
-                fotook = okfoto.toArray(new Integer[okfoto.size()]);
-                for(int x=0;x<fotook.length;x++) {
-                    System.out.println("Array "+ fotook[x].toString());
-                }
-
-                Toast.makeText(GalleryActivity.this, "" + position, Toast.LENGTH_SHORT).show();*/
+                //Toast.makeText(GalleryActivity.this, "" + position, Toast.LENGTH_SHORT).show();
 
             }
 
@@ -125,23 +94,47 @@ public class GalleryActivity extends AppCompatActivity {
 
     }
 
+    private void deleteFile(File f) {
+            Log.d("FILES", "Borrar " + f.getName());
+            if (f.delete()) {
+                Log.d("FILES", "Delete: " + f.getName());
+            } else {
+                Log.w("FILES", "Cant delete: " + f.getName());
+            }
+    }
+
     public void eliminarFotos(View view) {
         //Borrar Imatges seleccionades
+        if (okfoto.size() > 0) {
+            for(int okfile : okfoto) deleteFile(files[okfile]);
+        } else {
+            for(File f: files) deleteFile(f);
+        }
+        //okfoto.clear();
+        Toast.makeText(this, "Imatges esborrades.", Toast.LENGTH_SHORT).show();
+        finish();
+        Log.d("FILES", "Elements de l'Array seleccionada:" + okfoto.size());
+        startActivity(getIntent());
+    }
 
 
-        //Borrar ArrayList
-        okfoto.clear();
-        System.out.println("Elements de l'Array seleccionada:"+ okfoto.size());
+    public void refreshClick(View view) {
+        finish();
+        startActivity(getIntent());
+    }
 
+    public void SelectActivity(View view) {
+        finish();
+        startActivity(new Intent(this, UploadActivity.class));
     }
 
 
     public class ImageAdapter extends BaseAdapter {
 
         private Context mContext;
-        File[] files;
 
         public ImageAdapter(Context c, String path) {
+            Log.d("FILES", "Images Path: " + path);
             mContext = c;
             File imagesDir = new File(path);
             files = imagesDir.listFiles(new FilenameFilter() {
@@ -157,14 +150,7 @@ public class GalleryActivity extends AppCompatActivity {
             });
 
             Log.d("FILES", "Imatges a la carpeta: " + (files != null ? files.length : "null"));
-            for(File f : files) {
-                Log.d("FILES", (f.isDirectory() ?
-                                "Directory: " :
-                                "File: "
-                        ) +
-                                f.getName()
-                );
-            }
+
         }
 
         public int getCount() {
@@ -187,12 +173,6 @@ public class GalleryActivity extends AppCompatActivity {
             RelativeLayout rl;
 
             if (convertView == null) {
-                // if it's not recycled, initialize some attributes
- /*               imageView = new ImageView(mContext);
-                imageView.setLayoutParams(new GridView.LayoutParams(300, 300));
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setPadding(5, 5, 5, 5);*/
-
                 rl = new RelativeLayout(mContext);
                 ImageView i = new ImageView(mContext);
                 i.setLayoutParams(new GridView.LayoutParams(300, 300));
@@ -210,22 +190,13 @@ public class GalleryActivity extends AppCompatActivity {
                 rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 ck.setLayoutParams(rlp);
 
-
                 Drawable d = Drawable.createFromPath(files[position].getAbsolutePath());
                 i.setImageDrawable(d);
                 rl.addView(i); // 0 imatge del fitxer
                 rl.addView(ck); // 1 imatge de check
 
-            } else {
-                //imageView = (ImageView) convertView;
-                rl = (RelativeLayout) convertView;
-            }
+            } else rl = (RelativeLayout) convertView;
 
-
-            //Drawable d = Drawable.createFromPath(files[position].getAbsolutePath());
-            //i.setImageDrawable(d);
-
-            //return imageView;
             return rl;
         }
     }
