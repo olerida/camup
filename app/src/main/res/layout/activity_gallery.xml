@@ -27,21 +27,19 @@
         android:id="@+id/send_fbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:onClick="upfotosClick"
-    app:srcCompat="@android:drawable/ic_menu_send"
-        app:layout_anchorGravity="bottom|right" />
+    app:srcCompat="@android:drawable/stat_sys_upload" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/deleteall_fbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|left"
+        android:layout_gravity="bottom|start"
         android:layout_margin="@dimen/fab_margin"
         android:onClick="eliminarFotos"
-        app:srcCompat="@android:drawable/ic_menu_delete"
-        app:layout_anchorGravity="bottom|center_horizontal" />
+        app:srcCompat="@android:drawable/ic_menu_delete" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/refresh_fbtn"
@@ -50,7 +48,6 @@
         android:layout_gravity="bottom|center"
         android:layout_margin="@dimen/fab_margin"
         android:onClick="refreshClick"
-        app:srcCompat="@android:drawable/stat_notify_sync"
-        app:layout_anchorGravity="bottom|center_horizontal" />
+        app:srcCompat="@android:drawable/stat_notify_sync" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -1,7 +1,12 @@
 package com.segre.camup;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -41,14 +46,22 @@ public class GalleryActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+/*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.send_fbtn);
+        final Context c = this;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                        .setAction("Pujar", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(c, "up up", Toast.LENGTH_SHORT).show();
+                            }
+                        }).show();
             }
         });
+*/
 
         final GridView gridview = (GridView) findViewById(R.id.gallery_view);
         path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + PreferenceManager.getDefaultSharedPreferences(this).getString("local_path", "/Camera");
@@ -107,23 +120,43 @@ public class GalleryActivity extends AppCompatActivity {
         //Borrar Imatges seleccionades
         if (okfoto.size() > 0) {
             for(int okfile : okfoto) deleteFile(files[okfile]);
+            Toast.makeText(this, "Imatges esborrades", Toast.LENGTH_SHORT).show();
+            finish();
+            Log.d("FILES", "Elements de l'Array seleccionada:" + okfoto.size());
+            startActivity(getIntent());
         } else {
-            for(File f: files) deleteFile(f);
+            final AlertDialog alertDialog = new AlertDialog.Builder(GalleryActivity.this).create();
+            alertDialog.setTitle("Esborrar totes les imatges");
+            alertDialog.setMessage("Segur que vols esborrar totes les imatges ?");
+            final Context c = this;
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Confirmar",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            for (File f : files) deleteFile(f);
+                            Toast.makeText(c, "Totes les imatges esborrades", Toast.LENGTH_SHORT).show();
+                            finish();
+                            startActivity(getIntent());
+                        }
+                    });
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancelar",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            Toast.makeText(c, "Operació cancel·lada", Toast.LENGTH_SHORT).show();
+                            finish();
+                            startActivity(getIntent());
+                        }
+                    });
+            alertDialog.show();
         }
-        //okfoto.clear();
-        Toast.makeText(this, "Imatges esborrades.", Toast.LENGTH_SHORT).show();
-        finish();
-        Log.d("FILES", "Elements de l'Array seleccionada:" + okfoto.size());
-        startActivity(getIntent());
     }
-
 
     public void refreshClick(View view) {
         finish();
         startActivity(getIntent());
     }
 
-    public void SelectActivity(View view) {
+    public void upfotosClick(View view) {
         finish();
         startActivity(new Intent(this, UploadActivity.class));
     }
@@ -190,7 +223,11 @@ public class GalleryActivity extends AppCompatActivity {
                 rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 ck.setLayoutParams(rlp);
 
-                Drawable d = Drawable.createFromPath(files[position].getAbsolutePath());
+                BitmapFactory.Options bopt = new BitmapFactory.Options();
+                bopt.inSampleSize = 8;
+                Bitmap b = BitmapFactory.decodeFile(files[position].getAbsolutePath(), bopt);
+                Drawable d = new BitmapDrawable(getResources(), b);
+                //Drawable d = Drawable.createFromPath(files[position].getAbsolutePath());
                 i.setImageDrawable(d);
                 rl.addView(i); // 0 imatge del fitxer
                 rl.addView(ck); // 1 imatge de check
